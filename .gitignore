@@ -1,0 +1,42 @@
+# Node dependencies
+/gas-dashboard-frontend/node_modules/
+Lib/
+# Build outputs
+/gas-dashboard-frontend/build/
+/gas-dashboard-frontend/dist/
+
+# Logs
+/gas-dashboard-frontend/npm-debug.log*
+/gas-dashboard-frontend/yarn-debug.log*
+/gas-dashboard-frontend/yarn-error.log*
+
+# Env files (if you have secrets)
+/gas-dashboard-frontend/.env
+/gas-dashboard-frontend/.env.local
+/gas-dashboard-frontend/.env.development.local
+/gas-dashboard-frontend/.env.test.local
+/gas-dashboard-frontend/.env.production.local
+
+# MacOS / Linux / Windows system files
+/gas-dashboard-frontend/.DS_Store
+/gas-dashboard-frontend/Thumbs.db
+
+# IDE / Editor files
+/gas-dashboard-frontend/.vscode/
+/gas-dashboard-frontend/.idea/
+/gas-dashboard-frontend/*.suo
+/gas-dashboard-frontend/*.ntvs*
+/gas-dashboard-frontend/*.njsproj
+/gas-dashboard-frontend/*.sln
+
+# Optional: coverage for tests
+/gas-dashboard-frontend/coverage/
+
+# Optional: Yarn Berry
+/gas-dashboard-frontend/.yarn/cache/
+/gas-dashboard-frontend/.yarn/unplugged/
+/gas-dashboard-frontend/.pnp.*
+include/
+.idea/
+__pycache__/
+Scripts/
