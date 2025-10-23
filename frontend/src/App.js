@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import Plot from "react-plotly.js";
-import { Rnd } from "react-rnd";
+import RndPlotWrapper from "./components/RndPlotWrapper.react";
 
 export default function App() {
   const [priceData, setPriceData] = useState([]);
@@ -12,21 +11,7 @@ export default function App() {
   const [forecastRegressionData, setForecastRegressionData] = useState(null);
   const [minimizedCharts, setMinimizedCharts] = useState([]);
 
-  // Z-index for bringing chart to front
-  const [chartZIndices, setChartZIndices] = useState({
-    price: 1,
-    seasonalPrice: 1,
-    storage: 1,
-    seasonalStorage: 1,
-    regression: 1,
-  });
   const [topZ, setTopZ] = useState(1);
-
-  const plotRef = useRef();
-  const seasonalPriceRef = useRef();
-  const storageRef = useRef();
-  const seasonalStorageRef = useRef();
-  const regressionRef = useRef();
 
   // ------------------------- DATA FETCH -------------------------
   const fetchData = async () => {
@@ -298,95 +283,7 @@ export default function App() {
 
   const bringToFront = (id) => {
     const newZ = topZ + 1;
-    setChartZIndices((prev) => ({ ...prev, [id]: newZ }));
     setTopZ(newZ);
-  };
-
-  // ------------------------- RENDER RND PLOT -------------------------
-  const renderRndPlot = (id, title, dataProps, yLabel, ref) => {
-    if (minimizedCharts.includes(id)) return null;
-
-    return (
-      <Rnd
-        key={id}
-        default={{ x: 100, y: 100, width: 900, height: 480 }}
-        bounds="window"
-        minWidth={420}
-        minHeight={260}
-        dragHandleClassName="drag-handle"
-        style={{
-          background: "#1a1a1a",
-          borderRadius: 14,
-          border: "1px solid #333",
-          boxShadow: "0 0 12px rgba(0,0,0,0.4)",
-          overflow: "hidden",
-          zIndex: chartZIndices[id] || 1,
-        }}
-        onMouseDown={() => bringToFront(id)}
-      >
-        <div
-          className="drag-handle"
-          style={{
-            background: "#222",
-            color: "#00b4d8",
-            padding: "8px 12px",
-            cursor: "grab",
-            fontWeight: 600,
-            fontSize: "16px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          {title}
-          <button
-            onClick={() => minimizeChart(id)}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#ff5555",
-              fontSize: "18px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
-            ✕
-          </button>
-        </div>
-
-        <div style={{ height: "calc(100% - 42px)", padding: 8 }}>
-          <Plot
-            ref={ref}
-            data={dataProps}
-            layout={{
-              autosize: true,
-              paper_bgcolor: "#1a1a1a",
-              plot_bgcolor: "#1a1a1a",
-              font: { color: "#ccc" },
-              hovermode: "x unified",
-              dragmode: "zoom",
-              margin: { l: 60, r: 30, t: 20, b: 60 },
-              xaxis: { title: "Date", showgrid: false },
-              yaxis: { title: yLabel, gridcolor: "#333" },
-              hoverlabel: {
-                bgcolor: "#111",
-                bordercolor: "#00b4d8",
-                font: { color: "#fff" },
-              },
-              legend: {
-                orientation: "h",
-                y: -0.25,
-                x: 0,
-                font: { color: "#ccc" },
-              },
-            }}
-            config={{ responsive: true, displaylogo: false, scrollZoom: false }}
-            useResizeHandler
-            style={{ width: "100%", height: "100%" }}
-          />
-        </div>
-      </Rnd>
-    );
   };
 
   // ------------------------- MAIN RENDER -------------------------
@@ -429,46 +326,61 @@ export default function App() {
       </header>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
-        {renderRndPlot(
-          "Price Plot",
-          "Henry Hub Natural Gas Spot Price ($/MMBtu)",
-          [renderMainPlot(priceData, "Price ($/MMBtu)")],
-          "Price ($/MMBtu)",
-          plotRef
-        )}
-        {renderRndPlot(
-          "Seasonal Price Plot",
-          "Seasonal — Current Year vs Historical (Price)",
-          renderSeasonalPricePlot(seasonalPriceData, "Price ($/MMBtu)"),
-          "Price ($/MMBtu)",
-          seasonalPriceRef
-        )}
+        <RndPlotWrapper 
+          id="Price Plot" 
+          bringToFront={bringToFront} 
+          minimizeChart={minimizeChart} 
+          minimizedCharts={minimizedCharts} 
+          title="Henry Hub Natural Gas Spot Price ($/MMBtu)" 
+          plot={renderMainPlot(priceData, "Price ($/MMBtu)")}
+          xLabel="Date"
+          yLabel="Price ($/MMBtu)"
+        />
+        <RndPlotWrapper 
+          id="Seasonal Price Plot" 
+          bringToFront={bringToFront} 
+          minimizeChart={minimizeChart} 
+          minimizedCharts={minimizedCharts} 
+          title="Seasonal — Current Year vs Historical (Price)" 
+          plot={renderSeasonalPricePlot(seasonalPriceData, "Price ($/MMBtu)")}
+          xLabel="Date"
+          yLabel="Price ($/MMBtu)"
+        />
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 8 }}>
-        {renderRndPlot(
-          "Storage Plot",
-          "US Natural Gas Storage (BCF) — Actual",
-          [renderMainPlot(storageData, "Storage (BCF)", "#f48c06")],
-          "Storage (BCF)",
-          storageRef
-        )}
-        {renderRndPlot(
-          "Seasonal Storage Plot",
-          "Seasonal — Current Year, Historical Years & Monte Carlo Forecast (Storage)",
-          renderSeasonalStoragePlot(seasonalStorageData, "Storage (BCF)"),
-          "Storage (BCF)",
-          seasonalStorageRef
-        )}
+        <RndPlotWrapper 
+          id="Storage Plot" 
+          bringToFront={bringToFront} 
+          minimizeChart={minimizeChart} 
+          minimizedCharts={minimizedCharts} 
+          title="US Natural Gas Storage (BCF) — Actual" 
+          plot={renderMainPlot(storageData, "Storage (BCF)", "#f48c06")}
+          xLabel="Date"
+          yLabel="Storage (BCF)"
+        />
+        <RndPlotWrapper 
+          id="Seasonal Storage Plot" 
+          bringToFront={bringToFront} 
+          minimizeChart={minimizeChart} 
+          minimizedCharts={minimizedCharts} 
+          title="Seasonal — Current Year, Historical Years & Monte Carlo Forecast (Storage)" 
+          plot={renderSeasonalStoragePlot(seasonalStorageData, "Storage (BCF)")}
+          xLabel="Date"
+          yLabel="Storage (BCF)"
+        />
       </div>
-
-      {renderRndPlot(
-        "Storage Regression Forecast",
-        "Regression Forecast Storage (BCF)",
-        renderRegressionPlot(),
-        "Storage (BCF)",
-        regressionRef
-      )}
+        
+      <RndPlotWrapper 
+        id="Storage Regression Forecast" 
+        bringToFront={bringToFront} 
+        minimizeChart={minimizeChart} 
+        minimizedCharts={minimizedCharts} 
+        title="Regression Forecast Storage (BCF)" 
+        plot={renderRegressionPlot()}
+        xLabel="Date"
+        yLabel="Storage (BCF)"
+      />
 
       {minimizedCharts.length > 0 && (
         <div
