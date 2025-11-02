@@ -1,10 +1,7 @@
-import { useState } from 'react';
 import Plot from "react-plotly.js";
 import { Rnd } from "react-rnd";
 
 function RndPlotWrapper({ id, bringToFront, minimizeChart, minimizedCharts, title, plot, xLabel, yLabel }) {
-  const [zIndex, setZIndex] = useState(1);
-
   if (minimizedCharts.includes(id)) {
     return null;
   }
@@ -23,7 +20,6 @@ function RndPlotWrapper({ id, bringToFront, minimizeChart, minimizedCharts, titl
         border: "1px solid #333",
         boxShadow: "0 0 12px rgba(0,0,0,0.4)",
         overflow: "hidden",
-        zIndex: zIndex,
       }}
       onMouseDown={() => bringToFront(id)}
     >
